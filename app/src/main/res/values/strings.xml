@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">SaveAndGetJson</string>
+    <string name="RootFilePath">storage/emulated/0/</string>
+</resources>
