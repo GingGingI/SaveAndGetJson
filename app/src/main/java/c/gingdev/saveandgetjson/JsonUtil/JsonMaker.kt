@@ -6,6 +6,9 @@ import c.gingdev.saveandgetjson.FileUtil.FileAndDirChecker
 import c.gingdev.saveandgetjson.Models.ListItemModel
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
 import java.util.*
 
 class JsonMaker {
@@ -44,20 +47,32 @@ class JsonMaker {
 
     fun SaveJsonArrayAsFile() {
         val FADChecker = FileAndDirChecker(context)
-        val dirPath = FADChecker.ChkAndMakeJsonFile("JsonFiles.txt")
-//        val jsonFile = FADChecker.ChkAndMakeJsonFile(dirPath, "EditedFile")
-//        val fw = FileWriter(jsonFile)
-//        try {
-//            for (position in 0..(jarr.length() - 1)) {
-//                fw.write(jarr.getJSONObject(position).toString())
-//                Log.e("Jarr :", jarr.getJSONObject(position).toString())
-//            }
-//        }catch (ie: IOException) {
-//            ie.printStackTrace()
-//        }finally {
-//            fw.flush()
-//            fw.close()
-//        }
+        FADChecker.ChkAndMakeJsonFile("JsonFiles.txt")
+        val fw = FileWriter(File(context.filesDir,"JsonFiles.txt"))
+        try {
+            fw.write(makeAnJsonObjectToString())
+        }catch (ie: IOException) {
+            ie.printStackTrace()
+        }finally {
+            fw.flush()
+            fw.close()
+        }
+    }
+
+    private fun makeAnJsonObjectToString(): String {
+        val str = StringBuilder()
+        str.append("{\"data_${UUID.randomUUID()}\" : [")
+
+        for (position in 0..(jarr.length() - 1)) {
+            str.append(jarr.getJSONObject(position).toString())
+
+            if (position != jarr.length() - 1)
+                str.append(",")
+        }
+
+        str.append("]}")
+        Log.d("strbuilder", str.toString())
+        return str.toString()
     }
 
 }

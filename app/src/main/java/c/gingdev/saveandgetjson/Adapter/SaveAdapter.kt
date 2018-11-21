@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -44,12 +45,23 @@ class SaveAdapter: RecyclerView.Adapter<SaveHolder>, ItemTouchHelperAdapter {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 var item = ListItemModel()
-                item.title = ""
-                item.content = ""
+                item.title = s.toString()
+                item.content = items.get(position).content
                 items.set(position, item)
             }
         })
         holder.content.setText(items.get(position).content)
+        holder.content.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                var item = ListItemModel()
+                item.title = items.get(position).title
+                item.content = s.toString()
+                items.set(position, item)
+            }
+        })
         holder.view.setOnTouchListener(object : View.OnTouchListener {
             override fun onTouch(v: View?, event: MotionEvent?): Boolean {
                 if (event!!.action == MotionEvent.ACTION_DOWN) {
@@ -60,10 +72,10 @@ class SaveAdapter: RecyclerView.Adapter<SaveHolder>, ItemTouchHelperAdapter {
         })
     }
 
-    /**Add&GetListItem**/
+    /**ListItemController**/
 
     fun addItem(){
-        var item: ListItemModel = ListItemModel()
+        var item = ListItemModel()
         item.title = ""
         item.content = ""
         items.add(item)
@@ -71,7 +83,17 @@ class SaveAdapter: RecyclerView.Adapter<SaveHolder>, ItemTouchHelperAdapter {
     }
 
     fun getItems(): LinkedList<ListItemModel> {
+        for (i in items) {
+            Log.i("tt", i.title)
+            Log.i("cc", i.content)
+        }
         return items
+    }
+
+    fun removeItem(position: Int) {
+        items.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(position, items.size)
     }
 
     /**ItemTouchHelperAdapter**/
@@ -83,9 +105,7 @@ class SaveAdapter: RecyclerView.Adapter<SaveHolder>, ItemTouchHelperAdapter {
     }
 
     override fun onItemDismiss(position: Int) {
-        items.removeAt(position)
-        notifyItemRemoved(position)
-        notifyItemRangeChanged(position, items.size)
+        removeItem(position)
     }
 
 }
